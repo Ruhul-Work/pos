@@ -17,7 +17,10 @@ return Application::configure(basePath: dirname(__DIR__))
     health: '/up',
 )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // আপনার কাস্টম middleware alias রেজিস্টার করুন
+        $middleware->alias([
+            'perm' => \App\Http\Middleware\CheckPermission::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

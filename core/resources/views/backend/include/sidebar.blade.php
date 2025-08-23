@@ -28,6 +28,155 @@
 
                 </ul>
             </li>
+
+            {{-- user management module start --}}
+
+            {{-- <li class="sidebar-menu-group-title">User Management</li>
+            <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="flowbite:users-group-outline" class="menu-icon"></iconify-icon>
+                    <span>Users</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li>
+                        <a href="users-list.html"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>
+                            Users List</a>
+                    </li>
+                    <li>
+                        <a href="users-grid.html"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>
+                            Users Grid</a>
+                    </li>
+                    <li>
+                        <a href="add-user.html"><i class="ri-circle-fill circle-icon text-info-main w-auto"></i> Add
+                            User</a>
+                    </li>
+                    <li>
+                        <a href="view-profile.html"><i class="ri-circle-fill circle-icon text-danger-main w-auto"></i>
+                            View Profile</a>
+                    </li>
+                    <li>
+                        <a href="users-role-permission.html"><i
+                                class="ri-circle-fill circle-icon text-info-main w-auto"></i> User Role &
+                            Permission</a>
+                    </li>
+                </ul>
+            </li> --}}
+
+
+            {{-- user management module start --}}
+
+            @permgroup(['usermanage.users', 'rbac.permissions', 'rbac.role' ])
+            <li class="sidebar-menu-group-title">User Management</li>
+            @permgroup(['usermanage.users']) {{-- prefix ভিত্তিক হেডিং অটো-শো/হাইড --}}
+                <li
+                    class="dropdown {{ Route::is('usermanage.users.*') ? 'active' : '' }}">
+                    <a href="javascript:void(0)">
+                        <iconify-icon icon="flowbite:users-group-outline" class="menu-icon"></iconify-icon>
+                        <span>Users</span>
+                    </a>
+
+                    <ul class="sidebar-submenu">
+                        {{-- @if (can_route('usermanage.users.index')) --}}
+                        @perm('usermanage.users.index')
+                            {{-- ability auto → view --}}
+                            <li>
+                                 <a class="{{ Route::is('usermanage.users.index') ? 'active' : '' }}"
+                                    href="{{ route('usermanage.users.index') }}">
+                                    <i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i> Users List
+                                </a>
+                            </li>
+                        @endperm
+
+                        @perm('usermanage.users.create')
+                            <li>
+                                <a class="{{ Route::is('usermanage.users.create') ? 'active' : '' }}"
+                                    href="{{ route('usermanage.users.create') }}">
+                                    <i class="ri-circle-fill circle-icon text-info-main w-auto"></i> Add User
+                                </a>
+                            </li>
+                        @endperm
+
+                        @perm('usermanage.users.profile')
+                            <li>
+                                <a class="{{ Route::is('usermanage.users.profile') ? 'active' : '' }}"
+                                    href="{{ route('usermanage.users.profile') }}">
+                                    <i class="ri-circle-fill circle-icon text-danger-main w-auto"></i> View Profile
+                                </a>
+                            </li>
+                        @endperm
+
+                    </ul>
+                </li>
+            @endpermgroup
+
+            {{-- Permission management menu --}}
+            @permgroup(['rbac.permissions']) {{-- prefix ভিত্তিক হেডিং অটো-শো/হাইড --}}
+            <li class="dropdown {{ Route::is('rbac.*') ? 'active' : '' }}">
+                <a href="javascript:void(0)">
+                     <i class="ri-shield-keyhole-line me-1"></i>
+                    <span>Permission</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    @perm('rbac.permissions.index')
+                        <li>
+                            <a class="{{ Route::is('rbac.permissions.index') ? 'active' : '' }}"
+                                href="{{ route('rbac.permissions.index') }}">
+                                <i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>
+                                Assign permission
+                            </a>
+                        </li>
+                    @endperm
+                    @perm('rbac.permissions.create') 
+                        <li>
+                            <a class="{{ Route::is('rbac.permissions.create') ? 'active' : '' }}"
+                            href="{{ route('rbac.permissions.create') }}">
+                            <i class="ri-circle-fill circle-icon text-success-600 w-auto"></i>
+                            Add Permission
+                            </a>
+                        </li>
+                    @endperm
+                </ul>
+            </li>
+            @endpermgroup
+
+            {{-- Role management menu --}}
+            @permgroup(['rbac.role']) {{-- prefix ভিত্তিক হেডিং অটো-শো/হাইড --}}
+            <li class="dropdown {{ Route::is('rbac.*') ? 'active' : '' }}">
+                <a href="javascript:void(0)">
+                    <i class="ri-user-settings-line text-xl me-14 d-flex w-auto"></i>
+                    <span>Role</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    @perm('rbac.role.index')
+                        <li>
+                            <a class="{{ Route::is('rbac.role.index') ? 'active' : '' }}"
+                                href="{{ route('rbac.role.index') }}">
+                                <i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>
+                                Role & Access
+                            </a>
+                        </li>
+                    @endperm
+
+                    @perm('rbac.role.create') 
+                    <li>
+                        <a class="{{ Route::is('rbac.role.create') ? 'active' : '' }}"
+                        href="{{ route('rbac.role.create') }}">
+                        <i class="ri-circle-fill circle-icon text-success-600 w-auto"></i> Add Role
+                        </a>
+                    </li>
+                    @endperm
+                </ul>
+            </li>
+            @endpermgroup
+
+
+            @endpermgroup
+
+            {{-- user management module end --}}
+
+        
+         
+
             <li class="sidebar-menu-group-title">Application</li>
             <li>
                 <a href="email.html">
@@ -122,7 +271,8 @@
                     </li>
                     <li>
                         <a href="marketplace-details.html"><i
-                                class="ri-circle-fill circle-icon text-warning-main w-auto"></i> Marketplace Details</a>
+                                class="ri-circle-fill circle-icon text-warning-main w-auto"></i> Marketplace
+                            Details</a>
                     </li>
                     <li>
                         <a href="portfolio.html"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>
@@ -160,7 +310,8 @@
                             Alerts</a>
                     </li>
                     <li>
-                        <a href="card.html"><i class="ri-circle-fill circle-icon text-danger-main w-auto"></i> Card</a>
+                        <a href="card.html"><i class="ri-circle-fill circle-icon text-danger-main w-auto"></i>
+                            Card</a>
                     </li>
                     <li>
                         <a href="carousel.html"><i class="ri-circle-fill circle-icon text-info-main w-auto"></i>

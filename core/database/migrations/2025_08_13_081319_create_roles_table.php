@@ -12,11 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('roles', function (Blueprint $table) {
-            $table->id();
+            $table->bigIncrements('id');
             $table->string('name', 100)->unique();
-            $table->string('key', 100)->unique(); // e.g., super_admin, manager
+            $table->string('key', 100)->nullable()->unique(); // e.g. super_admin, manager
             $table->boolean('is_super')->default(false);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

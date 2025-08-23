@@ -10,7 +10,7 @@ Route::prefix('/')->middleware('web')->group(function () {
 Route::get('login', fn() => redirect()->route('backend.login'))->name('login');
 
 // ==== Backend (admin) ====
-Route::prefix('backend')->name('backend.')->middleware('web')->group(function () {
+Route::prefix('backend')->name('backend.')->middleware(['web'])->group(function () {
 
     // Guest-only
     Route::middleware('guest')->group(function () {
@@ -26,4 +26,6 @@ Route::prefix('backend')->name('backend.')->middleware('web')->group(function ()
         Route::post('logout',  [AuthController::class, 'logout'])->name('logout');            // POST /backend/logout
         Route::get('dashboard',[CoreController::class, 'home'])->name('dashboard');           // GET  /backend/dashboard
     });
+
 });
+
