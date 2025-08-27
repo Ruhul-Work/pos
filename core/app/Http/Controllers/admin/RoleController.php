@@ -8,6 +8,7 @@ use App\Support\PermCache;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class RoleController extends Controller
@@ -99,7 +100,7 @@ class RoleController extends Controller
             abort(403, 'Only a super user can create a super role.');
         }
 
-        // key না দিলে name থেকে slug (underscore) বানান; unique না হলে suffix দিন
+        // key না দিলে name থেকে underscore slug; conflict হলে suffix
         $key  = $data['key'] ?: Str::slug($data['name'], '_');
         $base = $key;
         $i    = 1;
@@ -107,12 +108,165 @@ class RoleController extends Controller
             $key = $base . '_' . $i++;
         }
 
-        Role::create([
+        $role = Role::create([
             'name'     => $data['name'],
             'key'      => $key,
             'is_super' => $isSuper,
         ]);
 
-        return redirect()->route('rbac.role.index')->with('success', 'Role created successfully.');
+        if ($req->ajax() || $req->wantsJson()) {
+            return response()->json([
+                'ok'   => true,
+                'id'   => $role->id,
+                'msg'  => 'Role created successfully.',
+                'role' => $role,
+            ]);
+        }
+
+        return back()->with('success', 'Role created successfully.');
+    }
+
+    public function list()
+    {
+        return view('backend.modules.role.list');
+    }
+
+    public function listAjax(Request $request)
+    {
+
+        // DataTables params
+        $columns   = ['id', 'name', 'key', 'is_super'];
+        $draw      = (int) $request->input('draw');
+        $start     = (int) $request->input('start', 0);
+        $length    = (int) $request->input('length', 10);
+        $orderIdx  = (int) $request->input('order.0.column', 0);
+        $orderCol  = $columns[$orderIdx] ?? 'id';
+        $orderDir  = strtolower($request->input('order.0.dir', 'desc')) === 'asc' ? 'asc' : 'desc';
+        $searchVal = trim($request->input('search.value', ''));
+
+        $base = Role::query()->select(['id', 'name', 'key', 'is_super']);
+
+        $total = $base->count();
+
+        $q = clone $base;
+        if ($searchVal !== '') {
+            $q->where(function ($w) use ($searchVal) {
+                $w->where('name', 'like', "%{$searchVal}%")
+                    ->orWhere('key', 'like', "%{$searchVal}%");
+            });
+        }
+        $filtered = $q->count();
+
+        $rows = $q->orderBy($orderCol, $orderDir)
+            ->skip($start)->take($length)->get();
+
+        $data = [];
+        foreach ($rows as $r) {
+            $checkbox = '<label class="checkboxs">
+            <input type="checkbox" class="row-check" data-id="' . $r->id . '">
+            <span class="checkmarks"></span>
+        </label>';
+
+            $name = '<strong class="badge text-sm fw-semibold bg-dark-primary-gradient px-20 py-9 radius-4 text-white">' . $r->name . '</strong>';
+            $key  = '<code>' . $r->key . '</code>';
+            $type = $r->is_super
+            ? '<span class="badge text-sm fw-semibold bg-dark-success-gradient px-20 py-9 radius-4 text-white">Super</span>'
+            : '<span class="badge text-sm fw-semibold text-lilac-600 bg-lilac-100 px-20 py-9 radius-4 text-white">Normal</span>';
+
+            // Actions: Matrix manage পেজে নেয়ার ছোট বাটন
+            $actions = '<div class="action-table-data">
+            <div class="edit-delete-action">
+             <a class="btn btn-info p-2" href="' . route('rbac.role.index') . '">
+                <iconify-icon icon="mdi:lock" class="text-lg"></iconify-icon>
+            </a>
+                <a href="#" class="w-32-px h-32-px bg-success-focus text-success-main rounded-circle d-inline-flex align-items-center justify-content-center btn-role-edit"
+                data-id="' . $r->id . '" data-bs-toggle="tooltip" title="Edit">
+                <iconify-icon icon="lucide:edit"></iconify-icon>
+                </a>
+                <a href="#" class="w-32-px h-32-px bg-danger-focus text-danger-main rounded-circle d-inline-flex align-items-center justify-content-center btn-role-delete"
+                data-id="'.$r->id.'" title="Delete">
+                <iconify-icon icon="mdi:delete"></iconify-icon>
+                </a>
+            </div>
+        </div>';
+
+            $data[] = [$r->id, $name, $key, $type, $actions];
+        }
+
+        return response()->json([
+            'draw'                 => $draw,
+            'iTotalRecords'        => $total,
+            'iTotalDisplayRecords' => $filtered,
+            'aaData'               => $data,
+        ]);
+    }
+
+
+
+    public function edit(Role $role)
+    {
+        return response()->json([
+            'id'       => $role->id,
+            'name'     => $role->name,
+            'key'      => $role->key,
+            'is_super' => (bool) $role->is_super,
+        ]);
+    }
+
+    public function update(Request $req, Role $role)
+    {
+        $data = $req->validate([
+            'name'     => ['required', 'string', 'max:100', Rule::unique('roles', 'name')->ignore($role->id)],
+            'key'      => ['nullable', 'string', 'max:100', Rule::unique('roles', 'key')->ignore($role->id)],
+            'is_super' => ['nullable', 'boolean'],
+        ]);
+
+        // শুধুমাত্র সুপার ইউজার সুপার রোল বানাতে/রাখতে পারবে
+        $wantSuper = (bool) ($data['is_super'] ?? false);
+        if ($wantSuper && ! ($req->user()?->isSuper())) {
+            abort(403, 'Only a super user can mark a role as super.');
+        }
+
+        // key blank থাকলে পুরোনো key রাখি; না হলে slugify + unique
+        $newKey = $data['key'] ?? $role->key;
+        if ($newKey !== $role->key) {
+            $newKey = Str::slug($newKey, '_');
+            $base   = $newKey;
+            $i      = 1;
+            while (Role::where('key', $newKey)->where('id', '!=', $role->id)->exists()) {
+                $newKey = $base . '_' . $i++;
+            }
+        }
+
+        $role->name     = $data['name'];
+        $role->key      = $newKey;
+        $role->is_super = $wantSuper ? 1 : 0;
+        $role->save();
+
+        // cache purge দরকার হলে
+        PermCache::forgetMaps();
+
+        if ($req->ajax() || $req->wantsJson()) {
+            return response()->json(['ok' => true, 'msg' => 'Role updated successfully.', 'role' => $role]);
+        }
+        return back()->with('success', 'Role updated successfully.');
+    }
+
+    public function destroy(Role $role)
+    {
+        // Super role delete restriction (optional)
+        if ($role->is_super) {
+            return response()->json([
+                'ok'  => false,
+                'msg' => 'Super role cannot be deleted.',
+            ], 403);
+        }
+
+        $role->delete();
+
+        return response()->json([
+            'ok'  => true,
+            'msg' => 'Role deleted successfully.',
+        ]);
     }
 }

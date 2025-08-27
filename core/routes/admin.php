@@ -45,5 +45,10 @@ Route::prefix('rbac')
         Route::post('role/save', [RoleController::class,'save'])->name('role.save');   
         Route::get('role/create', [RoleController::class,'create'])->name('role.create'); 
         Route::post('role',        [RoleController::class,'store'])->name('role.store'); 
+        Route::get('role/list',  [RoleController::class,'list'])->name('role.list');      
+        Route::post('role/list', [RoleController::class,'listAjax'])->name('role.list.ajax'); 
+        Route::get('roles/{role}/edit', [RoleController::class, 'edit'])->name('role.edit');
+        Route::put('roles/{role}', [RoleController::class, 'update'])->name('role.update');
+        Route::delete('roles/{role}', [RoleController::class, 'destroy'])->name('role.destroy');
 
     });

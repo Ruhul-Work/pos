@@ -42,5 +42,8 @@
     <!-- Main CSS -->
     <link rel="stylesheet" href="{{ asset('theme/admin/assets/css/style.css') }}?id={{rand(121,122233)}}">
 
+    {{-- ajax data table css --}}
+    {{-- <link rel="stylesheet" href="{{asset('theme/admin/assets/css/lib/ajaxdatatable/dataTables.bootstrap5.min.css')}}"> --}}
+
 
 </head>

@@ -40,6 +40,27 @@
     <!-- Main js -->
     <script src="{{ asset('theme/admin/assets/js/app.js') }}" type="text/javascript"></script>
 
+    {{-- sweetalert js --}}
+    <script src="{{ asset('theme/admin/assets/js/lib/sweetalert/sweetalerts.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('theme/admin/assets/js/lib/sweetalert/sweetalert2.all.min.js') }}" type="text/javascript"></script>
+
+
+    {{-- ajax data table js --}}
+        <script src="{{asset('theme/admin/assets/js/lib/ajaxdatatable/dataTables.bootstrap5.min.js')}}" type="text/javascript"></script>
+    {{-- <script src="{{asset('theme/admin/assets/js/lib/ajaxdatatable/jquery.dataTables.min.js')}}" type="text/javascript"></script> --}}
+    {{-- <script src="{{asset('theme/admin/assets/js/lib/ajaxdatatable/datatable.js')}}" type="text/javascript"></script> --}}
+
+    <!-- DataTables core + Bootstrap 5 skin Buttons extension (CSS + JS)-->
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/3.0.2/css/buttons.dataTables.min.css">
+    <!-- Buttons features -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.colVis.min.js"></script>
+    <script src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.0.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.print.min.js"></script>
+
 
     {{-- Modal --}}
 

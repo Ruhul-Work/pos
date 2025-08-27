@@ -15656,3 +15656,79 @@ td.fc-header-center {
 }
 
 /* === footer css end === */
+
+/* ===Data table top head css start === */
+
+.table-top-head {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    align-items: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    justify-content: center;
+    -webkit-justify-content: center;
+    -ms-flex-pack: center
+}
+
+@media(max-width:575px) {
+    .table-top-head.low-stock-top-head {
+        flex-wrap: wrap;
+        justify-content: start
+    }
+}
+
+.table-top-head.low-stock-top-head li {
+    margin-bottom: 10px
+}
+
+.table-top-head.low-stock-top-head li:last-child {
+    margin-right: 0
+}
+
+.table-top-head li {
+    margin-right: 10px;
+    flex-shrink: 0
+}
+
+.table-top-head li:last-child {
+    margin-right: 0
+}
+
+.table-top-head li #collapse-header {
+    margin-right: 0
+}
+
+@media(max-width:991.98px) {
+    .table-top-head li #collapse-header {
+        display: none
+    }
+}
+
+.table-top-head li a {
+    height: 38px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    align-items: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    justify-content: center;
+    -webkit-justify-content: center;
+    -ms-flex-pack: center;
+    border: 1px solid #e8ebed;
+    background: #fff;
+    border-radius: 8px;
+    padding: 6px
+}
+
+
+/* DataTables pagination numeric buttons grow with digits */
+div.dt-container .dt-paging .dt-paging-button:hover, div.dt-container .dt-paging .dt-paging-button.current {
+    /* background: var(--primary-600) !important; */
+    background: #e75a38ed !important;
+    color: #fff !important;
+    width: auto;
+}
+
+

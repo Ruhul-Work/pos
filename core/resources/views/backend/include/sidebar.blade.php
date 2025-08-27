@@ -165,6 +165,16 @@
                         </a>
                     </li>
                     @endperm
+                    
+                    @perm('rbac.role.list') {{-- ← এখানে ক্লিক করলে DataTable view খুলবে --}}
+                    <li>
+                        <a class="{{ Route::is('rbac.role.list') ? 'active' : '' }}"
+                        href="{{ route('rbac.role.list') }}">
+                        <i class="ri-circle-fill circle-icon text-success-600 w-auto"></i>
+                        Role List
+                        </a>
+                    </li>
+                    @endperm
                 </ul>
             </li>
             @endpermgroup
